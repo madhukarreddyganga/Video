@@ -1,26 +1,40 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React, { Component } from "react";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+import SearchBar from "./searchBar";
+import api from "./api";
+import VideoItem from "./videos";
+
+
+class App extends Component {
+  constructor() {
+    super();
+    this.state = { videos: [] };
+  }
+  submitHandler = term => {
+    api
+      .get("/search", {
+        params: {
+          q: term
+        }
+      })
+      .then(response => {
+        this.setState({ videos: response.data.items });
+      })
+      .catch(error => {
+        console.log(error);
+        return error;
+      });
+  };
+
+  render() {
+    return (
+      <div className="ui segment">
+        <SearchBar onFormSubmit={this.submitHandler} />
+        <h5>I have :{this.state.videos}</h5>
+        <VideoItem video={this.state.videos} />
+      </div>
+    );
+  }
 }
 
 export default App;
